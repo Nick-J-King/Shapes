@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour
     float vertexSize;
 
     private float max;
-    private float fullMax;
 
     private float scale;
 
@@ -74,7 +73,13 @@ public class PlayerController : MonoBehaviour
     float p;
     float p2;
 
-    Vector3[] dodecVerts;
+    Vector3[] dodecVerts;       // Vertices of a dodecahedron.
+
+    Vector3[] fullDodecVerts;   // Vertices of the dodecahedra at each of the 20 vertices.
+
+    int[,] fullDodecVertFaces;
+    //int[,] dodecCubeConnectors;
+
 
     void Start()
     {
@@ -103,6 +108,24 @@ public class PlayerController : MonoBehaviour
         dodecVerts[17] = new Vector3(-1.0f, -p2, 0.0f);
         dodecVerts[18] = new Vector3(1.0f, p2, 0.0f);
         dodecVerts[19] = new Vector3(-1, p2, 0.0f);
+
+
+        fullDodecVerts = new Vector3[20 * 20];
+
+        for (int i = 0; i < 20; i++)
+        {
+            AddFullDodecVertVerts(i * 20, dodecVerts[i], 0.1f);
+        }
+
+
+        fullDodecVertFaces = new int[20 * 12, 5];     // Faces of the dodecahedra at each vertex.
+
+        for (int i = 0; i < 20; i++)
+        {
+            AddFullDodecVertFaces(i * 12, i * 20);
+        }
+
+        //int[,] dodecCubeConnectors;
 
 
         // Create the array of meshes.
@@ -143,6 +166,82 @@ public class PlayerController : MonoBehaviour
     }
 
 
+
+    // We have the internal parameters set.
+    // Now, compute the geometry of the figure.
+    public void ComputeGeometry()
+    {
+        foreach (GameObject s in myList)
+        {
+            Destroy(s);
+        }
+
+        for (int i = 0; i < 14; i++)
+        {
+            ResetMesh(i);
+        }
+
+
+        // Construct the whole figure...
+        for (int i = 0; i < 12 * 20; i++)
+        {
+            AddPentBoth(fullDodecVerts[fullDodecVertFaces[i, 0]],
+                        fullDodecVerts[fullDodecVertFaces[i, 1]],
+                        fullDodecVerts[fullDodecVertFaces[i, 2]],
+                        fullDodecVerts[fullDodecVertFaces[i, 3]],
+                        fullDodecVerts[fullDodecVertFaces[i, 4]], 1);
+        }
+
+
+        // Now put the list of triangles in each mesh.
+        for (int i = 0; i < 14; i++)
+        {
+            ProcessMesh(i);
+        }
+
+
+        //TextStatus.text = "F: " + nFullFlats.ToString() + " D:" + nFullDiagonals.ToString() + " C:" + nFullCorners.ToString() + " IO:" + nFullyInOrOut.ToString();
+    }
+
+
+
+    void AddFullDodecVertVerts(int index, Vector3 pos, float vertScale)
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            fullDodecVerts[i + index] = dodecVerts[i] * vertScale + pos;
+        }
+    }
+
+    void AddFullDodecVertFaces(int faceIndex, int vertexOffset)
+    {
+        AddFullDodecVertFace(faceIndex, new int[] { 9, 1, 18, 19, 2 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 1, new int[] { 11, 6, 19, 18, 5 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 2, new int[] { 12, 13, 5, 18, 1 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 3, new int[] { 15, 14, 2, 19, 6 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 4, new int[] { 12, 1, 9, 8, 0 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 5, new int[] { 14, 3, 8, 9, 2 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 6, new int[] { 10, 11, 5, 13, 4 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 7, new int[] { 11, 10, 7, 15, 6 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 8, new int[] { 13, 12, 0, 16, 4 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 9, new int[] { 14, 15, 7, 17, 3 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 10, new int[] { 8, 3, 17, 16, 0 }, vertexOffset);
+        AddFullDodecVertFace(faceIndex + 11, new int[] { 10, 4, 16, 17, 7 }, vertexOffset);
+    }
+
+    void AddFullDodecVertFace(int faceIndex, int[] vertexIndices, int vertexOffset)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            fullDodecVertFaces[faceIndex, i] = vertexIndices[i] + vertexOffset;
+        }
+    }
+
+
+
+
+
+
     // called per frame, before performing physics
     void FixedUpdate()
     {
@@ -175,114 +274,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    // A geometry control has changed.
-    // Get the new parameters, and recompute the geometry.
-    //    public void CheckGeometryControls()
-    //    {
-    //        bool changed = GetParametersFromControls();
-    //        if (changed)
-    //        {
-    //            ComputeGeometry();
-    //        }
-    //    }
-
-    /*
-        // Read the geometry parameters from the controls,
-        // and work out the internal parameters.
-        public bool GetParametersFromControls()
-        {
-            bool changed = false;
-
-            // Lattice divisions.
-            if (nDivisions != (int)sliderDivisions.value)
-            {
-                nDivisions = (int)sliderDivisions.value;
-                changed = true;
-            }
-
-            textDivisions.text = "Divisions: " + nDivisions.ToString();
-
-            // Edges
-            if (dropdownEdgesInt != DropdownEdges.value)
-            {
-                dropdownEdgesInt = DropdownEdges.value;
-                changed = true;
-            }
-
-            // 4th edge
-            float sliderFloat = slider4thEdge.value;
-            int sliderInt = (int)(sliderFloat * (nDivisions + 1));
-            if (sliderInt > nDivisions) sliderInt = nDivisions;
-
-            // 5th edge
-            float sliderFloat5thEdge = slider5thEdge.value;
-            int sliderInt5thEdge = (int)(sliderFloat5thEdge * (nDivisions + 1));
-            if (sliderInt5thEdge > nDivisions) sliderInt5thEdge = nDivisions;
-
-
-            text4thEdge.text = "Edges: " + sliderInt.ToString() + " " + sliderInt5thEdge.ToString();
-
-            // Vertices
-            if (displayVertices != togglePoints.isOn)
-            {
-                displayVertices = togglePoints.isOn;
-                changed = true;
-            }
-
-            if (vertexSize != sliderVertexSize.value)
-            {
-                vertexSize = sliderVertexSize.value;
-                changed = true;
-            }
-
-
-            if (doClosure != toggleClosure.isOn)
-            {
-                doClosure = toggleClosure.isOn;
-                changed = true;
-            }
-
-
-            // Internal parameters.
-            nFullDivisions = nDivisions * 12;
-            if (sliderFullInt != sliderInt * 12)
-            {
-                sliderFullInt = sliderInt * 12;
-                changed = true;
-            }
-            if (sliderFullInt5thEdge != sliderInt5thEdge * 12)
-            {
-                sliderFullInt5thEdge = sliderInt5thEdge * 12;
-                changed = true;
-            }
-
-            max = (float)nDivisions;
-            fullMax = (float)nFullDivisions;
-
-            scale = size / max * vertexSize + 0.05f;
-
-            return changed;
-        }
-
-
-        public void CheckFrameToggle()
-        {
-            goFrame.SetActive(toggleFrame.isOn);
-        }
-
-        public void CheckFlipToggle()
-        {
-            if (toggleFlip.isOn)
-            {
-                mfMain.transform.localScale = new Vector3(1.0f, -1.0f, 1.0f);
-            }
-            else
-            {
-                mfMain.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-            }
-        }
-        */
-
     public void ResetAnimation()
     {
         //toggleAnimate.isOn = false;
@@ -301,77 +292,6 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    // We have the internal parameters set.
-    // Now, compute the geometry of the figure.
-    public void ComputeGeometry()
-    {
-        foreach (GameObject s in myList)
-        {
-            Destroy(s);
-        }
-
-        for (int i = 0; i < 14; i++)
-        {
-            ResetMesh(i);
-        }
-
-
-        for (int i = 0; i < 20; i++)
-        {
-            DoShape(dodecVerts[i], 0.2f);
-        }
-
-        // Now put the list of triangles in each mesh.
-        for (int i = 0; i < 14; i++)
-        {
-            ProcessMesh(i);
-        }
-
-
-        //TextStatus.text = "F: " + nFullFlats.ToString() + " D:" + nFullDiagonals.ToString() + " C:" + nFullCorners.ToString() + " IO:" + nFullyInOrOut.ToString();
-    }
-
-
-
-    void DoShape(Vector3 pos, float scale)
-    {
-        Vector3[] v = new Vector3[20];
-        for (int i = 0; i < 20; i++)
-        {
-            v[i] = dodecVerts[i] * scale + pos;
-        }
-
-        AddPentBoth(v[9], v[1], v[18], v[19], v[2], 1);
-        AddPentBoth(v[11], v[6], v[19], v[18], v[5], 1);
-        AddPentBoth(v[12], v[13], v[5], v[18], v[1], 1);
-        AddPentBoth(v[15], v[14], v[2], v[19], v[6], 1);
-        AddPentBoth(v[12], v[1], v[9], v[8], v[0], 1);
-        AddPentBoth(v[14], v[3], v[8], v[9], v[2], 1);
-        AddPentBoth(v[10], v[11], v[5], v[13], v[4], 1);
-        AddPentBoth(v[11], v[10], v[7], v[15], v[6], 1);
-        AddPentBoth(v[13], v[12], v[0], v[16], v[4], 1);
-        AddPentBoth(v[14], v[15], v[7], v[17], v[3], 1);
-        AddPentBoth(v[8], v[3], v[17], v[16], v[0], 1);
-        AddPentBoth(v[10], v[4], v[16], v[17], v[7], 1);
-    }
-
-/*
-    void DoShape(Vector3 pos, float scale)
-    {
-        AddPentBoth(v9, v1, v18, v19, v2, 1);
-        AddPentBoth(v11, v6, v19, v18, v5, 1);
-        AddPentBoth(v12, v13, v5, v18, v1, 1);
-        AddPentBoth(v15, v14, v2, v19, v6, 1);
-        AddPentBoth(v12, v1, v9, v8, v0, 1);
-        AddPentBoth(v14, v3, v8, v9, v2, 1);
-        AddPentBoth(v10, v11, v5, v13, v4, 1);
-        AddPentBoth(v11, v10, v7, v15, v6, 1);
-        AddPentBoth(v13, v12, v0, v16, v4, 1);
-        AddPentBoth(v14, v15, v7, v17, v3, 1);
-        AddPentBoth(v8, v3, v17, v16, v0, 1);
-        AddPentBoth(v10, v4, v16, v17, v7, 1);
-    }
-*/
 
     // Draw a vertex at the "zero surface", if applicable.
     public void DrawVertex(int xFull, int yFull, int zFull, float x0, float y0, float z0)
@@ -415,25 +335,6 @@ public class PlayerController : MonoBehaviour
     // Utils for vectors
     //
 
-    // Convert a full integer coord to a float from 0 to 1.
-    private float IntToFloat(int coord)
-    {
-        return (float)coord / fullMax;
-    }
-
-
-    // Convert float coord (0 - 1) into world coordinate.
-    private float CubeToWorld(float coord)
-    {
-        return coord * size - sizeOnTwo;
-    }
-
-
-    private float GridToWorld(int coord)
-    {
-        return ((float)coord / fullMax) * size - sizeOnTwo;
-    }
-
 
     public Vector3Int MixVectors3Int(Vector3Int baseVector, Vector3Int dir1, int mag1, Vector3Int dir2, int mag2)
     {
@@ -442,13 +343,6 @@ public class PlayerController : MonoBehaviour
         return result;
     }
 
-
-    public Vector3 IntVectorToWorld(Vector3Int intVector)
-    {
-        Vector3 result = new Vector3(GridToWorld(intVector.x), GridToWorld(intVector.y), GridToWorld(intVector.z));
-
-        return result;
-    }
 
 
     public void AddPentBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, int mesh)
