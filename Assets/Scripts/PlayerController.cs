@@ -69,8 +69,42 @@ public class PlayerController : MonoBehaviour
     public Camera mainCam;
 
 
+
+    // Phi and phi squared.
+    float p;
+    float p2;
+
+    Vector3[] dodecVerts;
+
     void Start()
     {
+        p = 1.618033988749894848204586834f;
+        p2 = 2.61803398875f;
+
+        dodecVerts = new Vector3[20];
+
+        dodecVerts[0] = new Vector3(p, -p, p);
+        dodecVerts[1] = new Vector3(p, p, p);
+        dodecVerts[2] = new Vector3(-p, p, p);
+        dodecVerts[3] = new Vector3(-p, -p, p);
+        dodecVerts[4] = new Vector3(p, -p, -p);
+        dodecVerts[5] = new Vector3(p, p, -p);
+        dodecVerts[6] = new Vector3(-p, p, -p);
+        dodecVerts[7] = new Vector3(-p, -p, -p);
+        dodecVerts[8] = new Vector3(0.0f, -1.0f, p2);
+        dodecVerts[9] = new Vector3(0.0f, 1.0f, p2);
+        dodecVerts[10] = new Vector3(0.0f, -1.0f, -p2);
+        dodecVerts[11] = new Vector3(0.0f, 1.0f, -p2);
+        dodecVerts[12] = new Vector3(p2, 0.0f, 1.0f);
+        dodecVerts[13] = new Vector3(p2, 0.0f, -1.0f);
+        dodecVerts[14] = new Vector3(-p2, 0.0f, 1.0f);
+        dodecVerts[15] = new Vector3(-p2, 0.0f, -1.0f);
+        dodecVerts[16] = new Vector3(1.0f, -p2, 0.0f);
+        dodecVerts[17] = new Vector3(-1.0f, -p2, 0.0f);
+        dodecVerts[18] = new Vector3(1.0f, p2, 0.0f);
+        dodecVerts[19] = new Vector3(-1, p2, 0.0f);
+
+
         // Create the array of meshes.
         mfSub = new MeshFilter[14];
 
@@ -282,7 +316,10 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        DoShape();
+        for (int i = 0; i < 20; i++)
+        {
+            DoShape(dodecVerts[i], 0.2f);
+        }
 
         // Now put the list of triangles in each mesh.
         for (int i = 0; i < 14; i++)
@@ -296,16 +333,45 @@ public class PlayerController : MonoBehaviour
 
 
 
-    void DoShape()
+    void DoShape(Vector3 pos, float scale)
     {
-        Vector3 v00 = new Vector3(0.0f, 0.0f, 0.0f);
-        Vector3 v01 = new Vector3(0.0f, 10.0f, 0.0f);
-        Vector3 v10 = new Vector3(10.0f, 0.0f, 0.0f);
-        Vector3 v11 = new Vector3(10.0f, 10.0f, 0.0f);
+        Vector3[] v = new Vector3[20];
+        for (int i = 0; i < 20; i++)
+        {
+            v[i] = dodecVerts[i] * scale + pos;
+        }
 
-        AddQuadBoth(v00, v01, v10, v11, 1);
+        AddPentBoth(v[9], v[1], v[18], v[19], v[2], 1);
+        AddPentBoth(v[11], v[6], v[19], v[18], v[5], 1);
+        AddPentBoth(v[12], v[13], v[5], v[18], v[1], 1);
+        AddPentBoth(v[15], v[14], v[2], v[19], v[6], 1);
+        AddPentBoth(v[12], v[1], v[9], v[8], v[0], 1);
+        AddPentBoth(v[14], v[3], v[8], v[9], v[2], 1);
+        AddPentBoth(v[10], v[11], v[5], v[13], v[4], 1);
+        AddPentBoth(v[11], v[10], v[7], v[15], v[6], 1);
+        AddPentBoth(v[13], v[12], v[0], v[16], v[4], 1);
+        AddPentBoth(v[14], v[15], v[7], v[17], v[3], 1);
+        AddPentBoth(v[8], v[3], v[17], v[16], v[0], 1);
+        AddPentBoth(v[10], v[4], v[16], v[17], v[7], 1);
     }
 
+/*
+    void DoShape(Vector3 pos, float scale)
+    {
+        AddPentBoth(v9, v1, v18, v19, v2, 1);
+        AddPentBoth(v11, v6, v19, v18, v5, 1);
+        AddPentBoth(v12, v13, v5, v18, v1, 1);
+        AddPentBoth(v15, v14, v2, v19, v6, 1);
+        AddPentBoth(v12, v1, v9, v8, v0, 1);
+        AddPentBoth(v14, v3, v8, v9, v2, 1);
+        AddPentBoth(v10, v11, v5, v13, v4, 1);
+        AddPentBoth(v11, v10, v7, v15, v6, 1);
+        AddPentBoth(v13, v12, v0, v16, v4, 1);
+        AddPentBoth(v14, v15, v7, v17, v3, 1);
+        AddPentBoth(v8, v3, v17, v16, v0, 1);
+        AddPentBoth(v10, v4, v16, v17, v7, 1);
+    }
+*/
 
     // Draw a vertex at the "zero surface", if applicable.
     public void DrawVertex(int xFull, int yFull, int zFull, float x0, float y0, float z0)
@@ -382,6 +448,51 @@ public class PlayerController : MonoBehaviour
         Vector3 result = new Vector3(GridToWorld(intVector.x), GridToWorld(intVector.y), GridToWorld(intVector.z));
 
         return result;
+    }
+
+
+    public void AddPentBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, int mesh)
+    {
+        if (myNumVerts[mesh] > MAXTVERTS) return;
+
+        myVerts[mesh].Add(v0);
+        myVerts[mesh].Add(v1);
+        myVerts[mesh].Add(v2);
+        myVerts[mesh].Add(v3);
+        myVerts[mesh].Add(v4);
+
+        myVerts[mesh].Add(v4);
+        myVerts[mesh].Add(v3);
+        myVerts[mesh].Add(v2);
+        myVerts[mesh].Add(v1);
+        myVerts[mesh].Add(v0);
+
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 1);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
+
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 3);
+
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 3);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 4);
+
+        // Other side;
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 5);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 1 + 5);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 5);
+
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 5);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 5);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 3 + 5);
+
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 5);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 3 + 5);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 4 + 5);
+
+        myNumVerts[mesh] += 10;
     }
 
 
