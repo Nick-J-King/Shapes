@@ -78,8 +78,9 @@ public class PlayerController : MonoBehaviour
     Vector3[] fullDodecVerts;   // Vertices of the dodecahedra at each of the 20 vertices.
 
     int[,] fullDodecVertFaces;
-    //int[,] dodecCubeConnectors;
+    int[,] dodecCubeConnectors;
 
+    private int connectors = 15;
 
     void Start()
     {
@@ -114,7 +115,7 @@ public class PlayerController : MonoBehaviour
 
         for (int i = 0; i < 20; i++)
         {
-            AddFullDodecVertVerts(i * 20, dodecVerts[i], 0.1f);
+            AddFullDodecVertVerts(i * 20, dodecVerts[i], 0.3f);
         }
 
 
@@ -125,7 +126,8 @@ public class PlayerController : MonoBehaviour
             AddFullDodecVertFaces(i * 12, i * 20);
         }
 
-        //int[,] dodecCubeConnectors;
+        dodecCubeConnectors = new int[connectors * 8, 4];
+        SetDodecCubeConnectors();
 
 
         // Create the array of meshes.
@@ -166,6 +168,8 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    //--------------------------------------------------------------------------------
+
 
     // We have the internal parameters set.
     // Now, compute the geometry of the figure.
@@ -181,7 +185,7 @@ public class PlayerController : MonoBehaviour
             ResetMesh(i);
         }
 
-
+        /*
         // Construct the whole figure...
         for (int i = 0; i < 12 * 20; i++)
         {
@@ -191,6 +195,14 @@ public class PlayerController : MonoBehaviour
                         fullDodecVerts[fullDodecVertFaces[i, 3]],
                         fullDodecVerts[fullDodecVertFaces[i, 4]], 1);
         }
+        */
+        for (int i = 0; i < connectors * 8; i++)
+        {
+            AddQuadBoth(fullDodecVerts[dodecCubeConnectors[i, 0]],
+                        fullDodecVerts[dodecCubeConnectors[i, 1]],
+                        fullDodecVerts[dodecCubeConnectors[i, 2]],
+                        fullDodecVerts[dodecCubeConnectors[i, 3]], 2);
+        }
 
 
         // Now put the list of triangles in each mesh.
@@ -198,9 +210,6 @@ public class PlayerController : MonoBehaviour
         {
             ProcessMesh(i);
         }
-
-
-        //TextStatus.text = "F: " + nFullFlats.ToString() + " D:" + nFullDiagonals.ToString() + " C:" + nFullCorners.ToString() + " IO:" + nFullyInOrOut.ToString();
     }
 
 
@@ -238,8 +247,52 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    void SetDodecCubeConnectors()
+    {
+        SetDodecCubeConnectorPair(0, new int[] { 0, 1, 2, 3 }, new int[] { 4, 5, 6, 7 }, 260, 240, 300, 280);
+        SetDodecCubeConnectorPair(1, new int[] { 0, 3, 7, 4 }, new int[] { 1, 2, 6, 5 }, 180, 160, 220, 200);
+        SetDodecCubeConnectorPair(2, new int[] { 4, 5, 1, 0 }, new int[] { 7, 6, 2, 3 }, 380, 360, 340, 320);
+
+        SetDodecCubeConnectorPair(3, new int[] { 12, 5, 19, 9 }, new int[] { 16, 10, 15, 3 }, 80, 260, 280, 40);
+        SetDodecCubeConnectorPair(4, new int[] { 3, 16, 12, 9 }, new int[] { 15, 10, 5, 19 }, 360, 20, 140, 340);
+        SetDodecCubeConnectorPair(5, new int[] { 16, 10, 5, 12 }, new int[] { 3, 15, 19, 9 }, 160, 0, 120, 220);
+
+        SetDodecCubeConnectorPair(6, new int[] { 8, 12, 18, 2 }, new int[] { 17, 4, 11, 15 }, 120, 380, 320, 0);
+        SetDodecCubeConnectorPair(7, new int[] { 8, 12, 4, 17 }, new int[] { 2, 18, 11, 15 }, 100, 260, 280, 60);
+        SetDodecCubeConnectorPair(8, new int[] { 8, 17, 15, 2 }, new int[] { 12, 4, 11, 18 }, 20, 180, 200, 140);
+
+        SetDodecCubeConnectorPair(9, new int[] { 14, 8, 1, 19 }, new int[] { 7, 16, 13, 11 }, 100, 360, 340, 60);
+        SetDodecCubeConnectorPair(10, new int[] { 14, 8, 16, 7 }, new int[] { 19, 1, 13, 11 }, 240, 0, 120, 300);
+        SetDodecCubeConnectorPair(11, new int[] { 14, 7, 11, 19 }, new int[] { 8, 16, 13, 1 }, 180, 40, 80, 200);
+
+        SetDodecCubeConnectorPair(12, new int[] { 14, 9, 18, 6 }, new int[] { 17, 0, 13, 10 }, 240, 20, 140, 300);
+        SetDodecCubeConnectorPair(13, new int[] { 14, 9, 0, 17 }, new int[] { 6, 18, 13, 10 }, 80, 320, 380, 40);
+        SetDodecCubeConnectorPair(14, new int[] { 14, 6, 10, 17 }, new int[] { 9, 18, 13, 0 }, 100, 220, 160, 60);
+    }
+
+    void SetDodecCubeConnectorPair(int faceIndex, int[] sideA, int[] sideB, int vertexSetA1, int vertexSetB1, int vertexSetA2, int vertexSetB2)
+    {
+        SetDodecCubeConnector(faceIndex * 8 + 0, new int[] { sideA[0] + vertexSetA1, sideA[1] + vertexSetA1, sideB[1] + vertexSetB1, sideB[0] + vertexSetB1 });
+        SetDodecCubeConnector(faceIndex * 8 + 1, new int[] { sideA[1] + vertexSetA1, sideA[2] + vertexSetA1, sideB[2] + vertexSetB1, sideB[1] + vertexSetB1 });
+        SetDodecCubeConnector(faceIndex * 8 + 2, new int[] { sideA[2] + vertexSetA1, sideA[3] + vertexSetA1, sideB[3] + vertexSetB1, sideB[2] + vertexSetB1 });
+        SetDodecCubeConnector(faceIndex * 8 + 3, new int[] { sideA[3] + vertexSetA1, sideA[0] + vertexSetA1, sideB[0] + vertexSetB1, sideB[3] + vertexSetB1 });
+
+        SetDodecCubeConnector(faceIndex * 8 + 4, new int[] { sideA[0] + vertexSetA2, sideA[1] + vertexSetA2, sideB[1] + vertexSetB2, sideB[0] + vertexSetB2 });
+        SetDodecCubeConnector(faceIndex * 8 + 5, new int[] { sideA[1] + vertexSetA2, sideA[2] + vertexSetA2, sideB[2] + vertexSetB2, sideB[1] + vertexSetB2 });
+        SetDodecCubeConnector(faceIndex * 8 + 6, new int[] { sideA[2] + vertexSetA2, sideA[3] + vertexSetA2, sideB[3] + vertexSetB2, sideB[2] + vertexSetB2 });
+        SetDodecCubeConnector(faceIndex * 8 + 7, new int[] { sideA[3] + vertexSetA2, sideA[0] + vertexSetA2, sideB[0] + vertexSetB2, sideB[3] + vertexSetB2 });
+    }
+
+    void SetDodecCubeConnector(int faceIndex, int[] vertexIndices)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            dodecCubeConnectors[faceIndex, i] = vertexIndices[i];
+        }
+    }
 
 
+    //--------------------------------------------------------------------------------
 
 
     // called per frame, before performing physics
@@ -344,7 +397,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-
+    // Vertices are clockwise (from "outside").
     public void AddPentBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, int mesh)
     {
         if (myNumVerts[mesh] > MAXTVERTS) return;
@@ -390,61 +443,63 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void AddQuadBoth(Vector3 v00, Vector3 v01, Vector3 v10, Vector3 v11, int mesh)
+    // Vertices are clockwise (from "outside").
+    public void AddQuadBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, int mesh)
     {
         if (myNumVerts[mesh] > MAXTVERTS) return;
 
-        myVerts[mesh].Add(v00);
-        myVerts[mesh].Add(v10);
-        myVerts[mesh].Add(v01);
-        myVerts[mesh].Add(v11);
+        myVerts[mesh].Add(v0);
+        myVerts[mesh].Add(v1);
+        myVerts[mesh].Add(v2);
+        myVerts[mesh].Add(v3);
 
-        myVerts[mesh].Add(v00);
-        myVerts[mesh].Add(v10);
-        myVerts[mesh].Add(v01);
-        myVerts[mesh].Add(v11);
+        myVerts[mesh].Add(v3);
+        myVerts[mesh].Add(v2);
+        myVerts[mesh].Add(v1);
+        myVerts[mesh].Add(v0);
+
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 1);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
 
         myTriangles[mesh].Add(myNumVerts[mesh] + 0);
         myTriangles[mesh].Add(myNumVerts[mesh] + 2);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1);
-
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
         myTriangles[mesh].Add(myNumVerts[mesh] + 3);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1);
 
         // Other side;
         myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 4);
         myTriangles[mesh].Add(myNumVerts[mesh] + 1 + 4);
         myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 4);
 
+        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 4);
         myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 4);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1 + 4);
         myTriangles[mesh].Add(myNumVerts[mesh] + 3 + 4);
 
         myNumVerts[mesh] += 8;
     }
 
 
-    public void AddTriangleBoth(Vector3 v00, Vector3 v01, Vector3 v10, int mesh)
+    // Vertices are clockwise (from "outside").
+    public void AddTriangleBoth(Vector3 v0, Vector3 v1, Vector3 v2, int mesh)
     {
         if (myNumVerts[mesh] > MAXTVERTS) return;
 
-        myVerts[mesh].Add(v00);
-        myVerts[mesh].Add(v01);
-        myVerts[mesh].Add(v10);
+        myVerts[mesh].Add(v0);
+        myVerts[mesh].Add(v1);
+        myVerts[mesh].Add(v2);
 
-        myVerts[mesh].Add(v00);
-        myVerts[mesh].Add(v10);
-        myVerts[mesh].Add(v01);
+        myVerts[mesh].Add(v2);
+        myVerts[mesh].Add(v1);
+        myVerts[mesh].Add(v0);
 
         myTriangles[mesh].Add(myNumVerts[mesh] + 0);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
         myTriangles[mesh].Add(myNumVerts[mesh] + 1);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
 
         // Other side;
         myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 3);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 3);
         myTriangles[mesh].Add(myNumVerts[mesh] + 1 + 3);
+        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 3);
 
         myNumVerts[mesh] += 6;
     }
