@@ -115,7 +115,7 @@ public class PlayerController : MonoBehaviour
 
         for (int i = 0; i < 20; i++)
         {
-            AddFullDodecVertVerts(i * 20, dodecVerts[i], 0.3f);
+            AddFullDodecVertVerts(i * 20, dodecVerts[i] * 2.0f, 0.2f);     // 0.3
         }
 
 
@@ -185,7 +185,6 @@ public class PlayerController : MonoBehaviour
             ResetMesh(i);
         }
 
-        /*
         // Construct the whole figure...
         for (int i = 0; i < 12 * 20; i++)
         {
@@ -195,13 +194,13 @@ public class PlayerController : MonoBehaviour
                         fullDodecVerts[fullDodecVertFaces[i, 3]],
                         fullDodecVerts[fullDodecVertFaces[i, 4]], 1);
         }
-        */
+
         for (int i = 0; i < connectors * 8; i++)
         {
             AddQuadBoth(fullDodecVerts[dodecCubeConnectors[i, 0]],
                         fullDodecVerts[dodecCubeConnectors[i, 1]],
                         fullDodecVerts[dodecCubeConnectors[i, 2]],
-                        fullDodecVerts[dodecCubeConnectors[i, 3]], 2);
+                        fullDodecVerts[dodecCubeConnectors[i, 3]], 3);
         }
 
 
@@ -306,7 +305,7 @@ public class PlayerController : MonoBehaviour
     {
         //if (toggleAnimate.isOn)
         {
-            mfMain.transform.Rotate(new Vector3(0.0f, 1.0f, 0.0f), Time.deltaTime * 10.0f);
+            mfMain.transform.Rotate(new Vector3(0.0f, 1.0f, 0.0f), Time.deltaTime * 20.0f);
         }
     }
 
