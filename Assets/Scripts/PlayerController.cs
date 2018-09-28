@@ -479,28 +479,29 @@ public class PlayerController : MonoBehaviour
 
 
     // Vertices are clockwise (from "outside").
-    public void AddTriangleBoth(Vector3 v0, Vector3 v1, Vector3 v2, int mesh)
+    public void AddTriangleBoth(Vector3 v0, Vector3 v1, Vector3 v2, int meshOutside, int meshInside)
     {
-        if (myNumVerts[mesh] > MAXTVERTS) return;
+        //if (myNumVerts[meshOutside] > MAXTVERTS) return;
 
-        myVerts[mesh].Add(v0);
-        myVerts[mesh].Add(v1);
-        myVerts[mesh].Add(v2);
+        myVerts[meshOutside].Add(v0);
+        myVerts[meshOutside].Add(v1);
+        myVerts[meshOutside].Add(v2);
 
-        myVerts[mesh].Add(v2);
-        myVerts[mesh].Add(v1);
-        myVerts[mesh].Add(v0);
+        myVerts[meshInside].Add(v2);
+        myVerts[meshInside].Add(v1);
+        myVerts[meshInside].Add(v0);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 0);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 1);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 2);
 
         // Other side;
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 3);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1 + 3);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 3);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0 + 3);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 1 + 3);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 2 + 3);
 
-        myNumVerts[mesh] += 6;
+        myNumVerts[meshOutside] += 3;
+        myNumVerts[meshInside] += 3;
     }
 
 }
