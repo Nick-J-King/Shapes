@@ -192,7 +192,7 @@ public class PlayerController : MonoBehaviour
                         fullDodecVerts[fullDodecVertFaces[i, 1]],
                         fullDodecVerts[fullDodecVertFaces[i, 2]],
                         fullDodecVerts[fullDodecVertFaces[i, 3]],
-                        fullDodecVerts[fullDodecVertFaces[i, 4]], 1);
+                        fullDodecVerts[fullDodecVertFaces[i, 4]], 1, 2);    // 1 Bright purple outside, 2 dim inside.
         }
 
         for (int i = 0; i < connectors * 8; i++)
@@ -200,9 +200,8 @@ public class PlayerController : MonoBehaviour
             AddQuadBoth(fullDodecVerts[dodecCubeConnectors[i, 0]],
                         fullDodecVerts[dodecCubeConnectors[i, 1]],
                         fullDodecVerts[dodecCubeConnectors[i, 2]],
-                        fullDodecVerts[dodecCubeConnectors[i, 3]], 3);
+                        fullDodecVerts[dodecCubeConnectors[i, 3]], 3, 4);   // 3 Bright yellow outside, 4 dim inside.
         }
-
 
         // Now put the list of triangles in each mesh.
         for (int i = 0; i < 14; i++)
@@ -257,15 +256,15 @@ public class PlayerController : MonoBehaviour
         SetDodecCubeConnectorPair(5, new int[] { 16, 10, 5, 12 }, new int[] { 3, 15, 19, 9 }, 160, 0, 120, 220);
 
         SetDodecCubeConnectorPair(6, new int[] { 8, 12, 18, 2 }, new int[] { 17, 4, 11, 15 }, 120, 380, 320, 0);
-        SetDodecCubeConnectorPair(7, new int[] { 8, 12, 4, 17 }, new int[] { 2, 18, 11, 15 }, 100, 260, 280, 60);
-        SetDodecCubeConnectorPair(8, new int[] { 8, 17, 15, 2 }, new int[] { 12, 4, 11, 18 }, 20, 180, 200, 140);
+        SetDodecCubeConnectorPair(7, new int[] { 17, 4, 12, 8 }, new int[] { 15, 11, 18, 2 }, 100, 260, 280, 60);
+        SetDodecCubeConnectorPair(8, new int[] { 2, 15, 17, 8 }, new int[] { 18, 11, 4, 12 }, 20, 180, 200, 140);
 
         SetDodecCubeConnectorPair(9, new int[] { 14, 8, 1, 19 }, new int[] { 7, 16, 13, 11 }, 100, 360, 340, 60);
-        SetDodecCubeConnectorPair(10, new int[] { 14, 8, 16, 7 }, new int[] { 19, 1, 13, 11 }, 240, 0, 120, 300);
-        SetDodecCubeConnectorPair(11, new int[] { 14, 7, 11, 19 }, new int[] { 8, 16, 13, 1 }, 180, 40, 80, 200);
+        SetDodecCubeConnectorPair(10, new int[] { 7, 16, 8, 14 }, new int[] { 11, 13, 1, 19 }, 240, 0, 120, 300);
+        SetDodecCubeConnectorPair(11, new int[] { 19, 11, 7, 14 }, new int[] { 1, 13, 16, 8 }, 180, 40, 80, 200);
 
         SetDodecCubeConnectorPair(12, new int[] { 14, 9, 18, 6 }, new int[] { 17, 0, 13, 10 }, 240, 20, 140, 300);
-        SetDodecCubeConnectorPair(13, new int[] { 14, 9, 0, 17 }, new int[] { 6, 18, 13, 10 }, 80, 320, 380, 40);
+        SetDodecCubeConnectorPair(13, new int[] { 17, 0, 9, 14 }, new int[] { 10, 13, 18, 6 }, 80, 320, 380, 40);
         SetDodecCubeConnectorPair(14, new int[] { 14, 6, 10, 17 }, new int[] { 9, 18, 13, 0 }, 100, 220, 160, 60);
     }
 
@@ -397,84 +396,86 @@ public class PlayerController : MonoBehaviour
 
 
     // Vertices are clockwise (from "outside").
-    public void AddPentBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, int mesh)
+    public void AddPentBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, int meshOutside, int meshInside)
     {
-        if (myNumVerts[mesh] > MAXTVERTS) return;
+        //if (myNumVerts[mesh] > MAXTVERTS) return;
 
-        myVerts[mesh].Add(v0);
-        myVerts[mesh].Add(v1);
-        myVerts[mesh].Add(v2);
-        myVerts[mesh].Add(v3);
-        myVerts[mesh].Add(v4);
+        myVerts[meshOutside].Add(v0);
+        myVerts[meshOutside].Add(v1);
+        myVerts[meshOutside].Add(v2);
+        myVerts[meshOutside].Add(v3);
+        myVerts[meshOutside].Add(v4);
 
-        myVerts[mesh].Add(v4);
-        myVerts[mesh].Add(v3);
-        myVerts[mesh].Add(v2);
-        myVerts[mesh].Add(v1);
-        myVerts[mesh].Add(v0);
+        myVerts[meshInside].Add(v4);
+        myVerts[meshInside].Add(v3);
+        myVerts[meshInside].Add(v2);
+        myVerts[meshInside].Add(v1);
+        myVerts[meshInside].Add(v0);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 0);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 1);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 2);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 3);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 0);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 2);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 3);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 3);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 4);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 0);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 3);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 4);
 
         // Other side;
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 5);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1 + 5);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 5);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 1);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 2);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 5);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 5);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 3 + 5);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 2);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 3);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 5);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 3 + 5);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 4 + 5);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 3);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 4);
 
-        myNumVerts[mesh] += 10;
+        myNumVerts[meshOutside] += 5;
+        myNumVerts[meshInside] += 5;
     }
 
 
     // Vertices are clockwise (from "outside").
-    public void AddQuadBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, int mesh)
+    public void AddQuadBoth(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, int meshOutside, int meshInside)
     {
-        if (myNumVerts[mesh] > MAXTVERTS) return;
+        //if (myNumVerts[mesh] > MAXTVERTS) return;
 
-        myVerts[mesh].Add(v0);
-        myVerts[mesh].Add(v1);
-        myVerts[mesh].Add(v2);
-        myVerts[mesh].Add(v3);
+        myVerts[meshOutside].Add(v0);
+        myVerts[meshOutside].Add(v1);
+        myVerts[meshOutside].Add(v2);
+        myVerts[meshOutside].Add(v3);
 
-        myVerts[mesh].Add(v3);
-        myVerts[mesh].Add(v2);
-        myVerts[mesh].Add(v1);
-        myVerts[mesh].Add(v0);
+        myVerts[meshInside].Add(v3);
+        myVerts[meshInside].Add(v2);
+        myVerts[meshInside].Add(v1);
+        myVerts[meshInside].Add(v0);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 0);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 1);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 2);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 3);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 0);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 2);
+        myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 3);
 
         // Other side;
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 4);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 1 + 4);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 4);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 1);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 2);
 
-        myTriangles[mesh].Add(myNumVerts[mesh] + 0 + 4);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 2 + 4);
-        myTriangles[mesh].Add(myNumVerts[mesh] + 3 + 4);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 2);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 3);
 
-        myNumVerts[mesh] += 8;
+        myNumVerts[meshOutside] += 4;
+        myNumVerts[meshInside] += 4;
     }
 
 
@@ -496,9 +497,9 @@ public class PlayerController : MonoBehaviour
         myTriangles[meshOutside].Add(myNumVerts[meshOutside] + 2);
 
         // Other side;
-        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0 + 3);
-        myTriangles[meshInside].Add(myNumVerts[meshInside] + 1 + 3);
-        myTriangles[meshInside].Add(myNumVerts[meshInside] + 2 + 3);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 0);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 1);
+        myTriangles[meshInside].Add(myNumVerts[meshInside] + 2);
 
         myNumVerts[meshOutside] += 3;
         myNumVerts[meshInside] += 3;
