@@ -1295,6 +1295,65 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 747800446}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &817766265
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 817766267}
+  - component: {fileID: 817766266}
+  m_Layer: 0
+  m_Name: Dodec
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &817766266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 817766265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f97713258613487cb5845ddb37a8d8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vertexMaterial: {fileID: 0}
+  myNumVerts: 
+  myNumTriangles: 
+  mfMain: {fileID: 0}
+  mfSub: []
+  mfMain0: {fileID: 0}
+  mfMain1: {fileID: 0}
+  mfMain2: {fileID: 0}
+  mfMain3: {fileID: 0}
+  mfMain4: {fileID: 0}
+  mfMain5: {fileID: 0}
+  mfMain6: {fileID: 0}
+  mfMain7: {fileID: 0}
+  mfMain8: {fileID: 0}
+  mfMain9: {fileID: 0}
+  mfMain10: {fileID: 0}
+  mfMain11: {fileID: 0}
+  mfMain12: {fileID: 0}
+  mfMain13: {fileID: 0}
+--- !u!4 &817766267
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 817766265}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.31231123, y: -1.1214683, z: -14.207571}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &818408174
 GameObject:
   m_ObjectHideFlags: 0
@@ -1619,7 +1678,7 @@ GameObject:
   - component: {fileID: 1185432681}
   - component: {fileID: 1185432677}
   m_Layer: 0
-  m_Name: PlayerSphere
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1636,27 +1695,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02f29ea8ffed4ce44b60d02ae9814fa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vertexMaterial: {fileID: 2100000, guid: 1c63e97a6b88b4cc09f795202a067d7e, type: 2}
   goFrame: {fileID: 1537909948}
+  dodec: {fileID: 0}
   directionalLight: {fileID: 170076734}
-  myNumVerts: 
-  myNumTriangles: 
-  mfMain: {fileID: 1270284521}
-  mfSub: []
-  mfMain0: {fileID: 2131286511}
-  mfMain1: {fileID: 818408177}
-  mfMain2: {fileID: 1706852357}
-  mfMain3: {fileID: 1487323635}
-  mfMain4: {fileID: 32103746}
-  mfMain5: {fileID: 120213654}
-  mfMain6: {fileID: 1150231838}
-  mfMain7: {fileID: 1405180651}
-  mfMain8: {fileID: 675663892}
-  mfMain9: {fileID: 322575253}
-  mfMain10: {fileID: 1400411178}
-  mfMain11: {fileID: 540768388}
-  mfMain12: {fileID: 1701565948}
-  mfMain13: {fileID: 670887904}
   mainCamController: {fileID: 534669906}
   mainCam: {fileID: 534669904}
 --- !u!4 &1185432681

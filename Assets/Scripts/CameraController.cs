@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class AzimuthElevation
+public struct AzimuthElevation
 {
     public float azimuth;
     public float elevation;
 }
 
 
-public class XYZ
+public struct XYZ
 {
     public float x;
     public float y;
@@ -33,11 +33,9 @@ public class CameraController : MonoBehaviour {
 
     void Start ()
     {
-        azimuthElevation = new AzimuthElevation();
         azimuthElevation.azimuth = 0.0f;
         azimuthElevation.elevation = 0.0f;
 
-        xyz = new XYZ();
         xyz.x = 0.0f;
         xyz.y = 0.0f;
         xyz.z = 0.0f;
