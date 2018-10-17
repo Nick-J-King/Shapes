@@ -2,20 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public struct ShapeDodecParameters
+{
+    public float masterScale;   // Scale of main shape.
+    public float nodeScale;     // Scale of each vertex node.
+}
+
+
 public class ShapeDodec : MonoBehaviour {
 
     //public Material vertexMaterial;
 
+    public ShapeDodecParameters parameters;
 
     // internal parameters.
   
-    private float size;
-    private float sizeOnTwo;
-
     //bool displayVertices;
     //float vertexSize;
-
-    private float scale;
 
 
     // Internal cache for building meshes.
@@ -51,9 +55,6 @@ public class ShapeDodec : MonoBehaviour {
     //private GameObject s;
     //private ArrayList myList;
 
-
-    // phi and phi squared.
-  
 
     private Vector3[] fullDodecVerts;   // Vertices of the dodecahedra at each of the 20 vertices.
 
@@ -94,11 +95,6 @@ public class ShapeDodec : MonoBehaviour {
 
         // Create the list of vertex spheres.
         //myList = new ArrayList();
-        scale = 1.0f;
-
-        // Set the basic size of the figure to match the cube frame.
-        size = 10.0f;               // Size of the "configuration cube".
-        sizeOnTwo = size / 2.0f;    // Used to center the cube.
 
         // Initialise intrinsic data.
         ComputeFaces();
@@ -163,10 +159,10 @@ public class ShapeDodec : MonoBehaviour {
         fullDodecVerts = new Vector3[20 * 20];
         // The vertices of the 20 dodecahedra (one for each vertex of the "master" dodecahron.
 
-        float dodecScale = 2.0f;
+        float dodecScale = parameters.masterScale;
             // Scale of the "master" dodecahedron.
 
-        float vertScale = 0.2f;
+        float vertScale = parameters.nodeScale;
             // Scale of the dodecahedron at each point of the "master" dodecahedron.
 
         int index;
