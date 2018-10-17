@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ShapeDodec : MonoBehaviour {
 
-    public Material vertexMaterial;
+    //public Material vertexMaterial;
 
 
     // internal parameters.
@@ -12,25 +12,23 @@ public class ShapeDodec : MonoBehaviour {
     private float size;
     private float sizeOnTwo;
 
-    bool displayVertices;
-    float vertexSize;
-
-    private float max;
+    //bool displayVertices;
+    //float vertexSize;
 
     private float scale;
 
 
     // Internal cache for building meshes.
-    public int[] myNumVerts;
-    public int[] myNumTriangles;
-    public List<Vector3>[] myVerts;
-    public List<int>[] myTriangles;
+    private int[] myNumVerts;
+    private int[] myNumTriangles;
+    private List<Vector3>[] myVerts;
+    private List<int>[] myTriangles;
 
 
     // Mesh gameobjects.
     public GameObject mfMain;
 
-    public MeshFilter[] mfSub;  // Point to the 14 "sub meshes"
+    private MeshFilter[] mfSub;  // Point to the 14 "sub meshes"
 
     public MeshFilter mfMain0;
     public MeshFilter mfMain1;
@@ -47,20 +45,15 @@ public class ShapeDodec : MonoBehaviour {
     public MeshFilter mfMain12;
     public MeshFilter mfMain13;
 
-    private int MAXTVERTS = 65530;
+    //private int MAXTVERTS = 65530;
 
     // List of vertex spheres.
-    private GameObject s;
-    private ArrayList myList;
-
+    //private GameObject s;
+    //private ArrayList myList;
 
 
     // phi and phi squared.
   
-    private float p;
-    private float p2;
-
-    private Vector3[] dodecVerts;       // Vertices of a dodecahedron.
 
     private Vector3[] fullDodecVerts;   // Vertices of the dodecahedra at each of the 20 vertices.
 
@@ -70,13 +63,78 @@ public class ShapeDodec : MonoBehaviour {
     private int connectors = 15;
 
 
+    // Called before any Start.
+    // Inialise so this object can support ComputeGeometry in Start()
 
-    // Use this for initialization
-    void Start()
+    private void Awake()
     {
+        // Create the array of meshes.
+        mfSub = new MeshFilter[14];
 
-        p = 1.618033988749894848204586834f;
-        p2 = 2.61803398875f;
+        mfSub[0] = mfMain0;
+        mfSub[1] = mfMain1;
+        mfSub[2] = mfMain2;
+        mfSub[3] = mfMain3;
+        mfSub[4] = mfMain4;
+        mfSub[5] = mfMain5;
+        mfSub[6] = mfMain6;
+        mfSub[7] = mfMain7;
+        mfSub[8] = mfMain8;
+        mfSub[9] = mfMain9;
+        mfSub[10] = mfMain10;
+        mfSub[11] = mfMain11;
+        mfSub[12] = mfMain12;
+        mfSub[13] = mfMain13;
+
+        // Create the builder info for each of the meshes.
+        myNumVerts = new int[14];
+        myNumTriangles = new int[14];
+        myVerts = new List<Vector3>[14];
+        myTriangles = new List<int>[14];
+
+        // Create the list of vertex spheres.
+        //myList = new ArrayList();
+        scale = 1.0f;
+
+        // Set the basic size of the figure to match the cube frame.
+        size = 10.0f;               // Size of the "configuration cube".
+        sizeOnTwo = size / 2.0f;    // Used to center the cube.
+
+        // Initialise intrinsic data.
+        ComputeFaces();
+    }
+
+
+    // Update is called once per frame
+    void Update ()
+    {
+		
+	}
+
+
+    // Conpute the geometry according to the parameters.
+
+    public void ComputeGeometry()
+    {
+        ComputeVertices();
+        ConstructMesh();
+    }
+
+
+    // Compute the vertices.
+    // These are the vertices of a dodecahedon moved to each vertex of the "master dodecahedon.
+
+    private void ComputeVertices()
+    {
+        float p;
+        float p2;
+
+        Vector3[] dodecVerts;
+            // Vertices of a "unit" dodecahedron.
+
+    
+        p = 1.618033988749894848204586834f; // Phi
+        p2 = 2.61803398875f;                // Phi squared.
 
         dodecVerts = new Vector3[20];
 
@@ -103,14 +161,40 @@ public class ShapeDodec : MonoBehaviour {
 
 
         fullDodecVerts = new Vector3[20 * 20];
+        // The vertices of the 20 dodecahedra (one for each vertex of the "master" dodecahron.
 
-        for (int i = 0; i < 20; i++)
+        float dodecScale = 2.0f;
+            // Scale of the "master" dodecahedron.
+
+        float vertScale = 0.2f;
+            // Scale of the dodecahedron at each point of the "master" dodecahedron.
+
+        int index;
+        Vector3 pos;
+
+        for (int nDodec = 0; nDodec < 20; nDodec++)
         {
-            AddFullDodecVertVerts(i * 20, dodecVerts[i] * 2.0f, 0.2f);     // 0.3
+            index = nDodec * 20;
+
+            pos = dodecVerts[nDodec] * dodecScale;
+
+            // Place a copy of the unit dodecahedon, scaled and translated.
+
+            for (int nVert = 0; nVert < 20; nVert++)
+            {
+                fullDodecVerts[nVert + index] = dodecVerts[nVert] * vertScale + pos;
+            }
         }
+    }
 
 
-        fullDodecVertFaces = new int[20 * 12, 5];     // Faces of the dodecahedra at each vertex.
+    // Compute the connectivity of the faces.
+    // Only needs to be done once.
+
+    private void ComputeFaces()
+    {
+        fullDodecVertFaces = new int[20 * 12, 5];
+            // Faces of the dodecahedra at each vertex.
 
         for (int i = 0; i < 20; i++)
         {
@@ -118,100 +202,12 @@ public class ShapeDodec : MonoBehaviour {
         }
 
         dodecCubeConnectors = new int[connectors * 8, 4];
+            // Faces of the square prisms connecting each dodecahedron.
+
         SetDodecCubeConnectors();
 
-
-        // Create the array of meshes.
-        mfSub = new MeshFilter[14];
-
-        mfSub[0] = mfMain0;
-        mfSub[1] = mfMain1;
-        mfSub[2] = mfMain2;
-        mfSub[3] = mfMain3;
-        mfSub[4] = mfMain4;
-        mfSub[5] = mfMain5;
-        mfSub[6] = mfMain6;
-        mfSub[7] = mfMain7;
-        mfSub[8] = mfMain8;
-        mfSub[9] = mfMain9;
-        mfSub[10] = mfMain10;
-        mfSub[11] = mfMain11;
-        mfSub[12] = mfMain12;
-        mfSub[13] = mfMain13;
-
-        // Create the builder info for each of the meshes.
-        myNumVerts = new int[14];
-        myNumTriangles = new int[14];
-        myVerts = new List<Vector3>[14];
-        myTriangles = new List<int>[14];
-
-        // Create the list of vertex spheres.
-        myList = new ArrayList();
-        scale = 1.0f;
-
-        // Set the basic size of the figure to match the cube frame.
-        size = 10.0f;               // Size of the "configuration cube".
-        sizeOnTwo = size / 2.0f;    // Used to center the cube.
-
-        //        GetParametersFromControls();
-        //        SetLightFromControls();
-        ComputeGeometry();
     }
 
-    // Update is called once per frame
-    void Update ()
-    {
-		
-	}
-
-    // We have the internal parameters set.
-    // Now, compute the geometry of the figure.
-    public void ComputeGeometry()
-    {
-        foreach (GameObject s in myList)
-        {
-            Destroy(s);
-        }
-
-        for (int i = 0; i < 14; i++)
-        {
-            ResetMesh(i);
-        }
-
-        // Construct the whole figure...
-        for (int i = 0; i < 12 * 20; i++)
-        {
-            AddPentBoth(fullDodecVerts[fullDodecVertFaces[i, 0]],
-                        fullDodecVerts[fullDodecVertFaces[i, 1]],
-                        fullDodecVerts[fullDodecVertFaces[i, 2]],
-                        fullDodecVerts[fullDodecVertFaces[i, 3]],
-                        fullDodecVerts[fullDodecVertFaces[i, 4]], 1, 2);    // 1 Bright purple outside, 2 dim inside.
-        }
-
-        for (int i = 0; i < connectors * 8; i++)
-        {
-            AddQuadBoth(fullDodecVerts[dodecCubeConnectors[i, 0]],
-                        fullDodecVerts[dodecCubeConnectors[i, 1]],
-                        fullDodecVerts[dodecCubeConnectors[i, 2]],
-                        fullDodecVerts[dodecCubeConnectors[i, 3]], 3, 4);   // 3 Bright yellow outside, 4 dim inside.
-        }
-
-        // Now put the list of triangles in each mesh.
-        for (int i = 0; i < 14; i++)
-        {
-            ProcessMesh(i);
-        }
-    }
-
-
-
-    void AddFullDodecVertVerts(int index, Vector3 pos, float vertScale)
-    {
-        for (int i = 0; i < 20; i++)
-        {
-            fullDodecVerts[i + index] = dodecVerts[i] * vertScale + pos;
-        }
-    }
 
     void AddFullDodecVertFaces(int faceIndex, int vertexOffset)
     {
@@ -228,6 +224,7 @@ public class ShapeDodec : MonoBehaviour {
         AddFullDodecVertFace(faceIndex + 10, new int[] { 8, 3, 17, 16, 0 }, vertexOffset);
         AddFullDodecVertFace(faceIndex + 11, new int[] { 10, 4, 16, 17, 7 }, vertexOffset);
     }
+
 
     void AddFullDodecVertFace(int faceIndex, int[] vertexIndices, int vertexOffset)
     {
@@ -261,6 +258,7 @@ public class ShapeDodec : MonoBehaviour {
         SetDodecCubeConnectorPair(14, new int[] { 14, 6, 10, 17 }, new int[] { 9, 18, 13, 0 }, 100, 220, 160, 60);
     }
 
+
     void SetDodecCubeConnectorPair(int faceIndex, int[] sideA, int[] sideB, int vertexSetA1, int vertexSetB1, int vertexSetA2, int vertexSetB2)
     {
         SetDodecCubeConnector(faceIndex * 8 + 0, new int[] { sideA[0] + vertexSetA1, sideA[1] + vertexSetA1, sideB[1] + vertexSetB1, sideB[0] + vertexSetB1 });
@@ -274,6 +272,7 @@ public class ShapeDodec : MonoBehaviour {
         SetDodecCubeConnector(faceIndex * 8 + 7, new int[] { sideA[3] + vertexSetA2, sideA[0] + vertexSetA2, sideB[0] + vertexSetB2, sideB[3] + vertexSetB2 });
     }
 
+
     void SetDodecCubeConnector(int faceIndex, int[] vertexIndices)
     {
         for (int i = 0; i < 4; i++)
@@ -283,24 +282,24 @@ public class ShapeDodec : MonoBehaviour {
     }
 
 
-
     // Draw a vertex at the "zero surface", if applicable.
-    public void DrawVertex(int xFull, int yFull, int zFull, float x0, float y0, float z0)
-    {
-        //if (CanFormTriangleVertex(xFull, yFull, zFull) == 0)
-        {
-            s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            s.transform.parent = mfMain.transform;
 
-            s.transform.localPosition = new Vector3(x0, y0, z0);
-            s.transform.localScale = new Vector3(scale, scale, scale);
-
-            s.GetComponent<Renderer>().material = vertexMaterial;
-            s.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-
-            myList.Add(s);
-        }
-    }
+    //public void DrawVertex(int xFull, int yFull, int zFull, float x0, float y0, float z0)
+    //{
+    //    //if (CanFormTriangleVertex(xFull, yFull, zFull) == 0)
+    //    {
+    //        s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+    //        s.transform.parent = mfMain.transform;
+    //
+    //        s.transform.localPosition = new Vector3(x0, y0, z0);
+    //        s.transform.localScale = new Vector3(scale, scale, scale);
+    //
+    //        s.GetComponent<Renderer>().material = vertexMaterial;
+    //        s.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    //
+    //        myList.Add(s);
+    //    }
+    //}
 
 
     public void ResetMesh(int mesh)
@@ -322,6 +321,46 @@ public class ShapeDodec : MonoBehaviour {
     }
 
 
+    // We have the internal parameters set.
+    // Now, compute the geometry of the figure.
+    private void ConstructMesh()
+    {
+        //foreach (GameObject s in myList)
+        //{
+        //    Destroy(s);
+        //}
+
+        for (int i = 0; i < 14; i++)
+        {
+            ResetMesh(i);
+        }
+
+        // Construct the whole figure...
+        for (int i = 0; i < 12 * 20; i++)
+        {
+            AddPentBoth(fullDodecVerts[fullDodecVertFaces[i, 0]],
+                        fullDodecVerts[fullDodecVertFaces[i, 1]],
+                        fullDodecVerts[fullDodecVertFaces[i, 2]],
+                        fullDodecVerts[fullDodecVertFaces[i, 3]],
+                        fullDodecVerts[fullDodecVertFaces[i, 4]], 1, 2);    // 1 Bright purple outside, 2 dim inside.
+        }
+
+        for (int i = 0; i < connectors * 8; i++)
+        {
+            AddQuadBoth(fullDodecVerts[dodecCubeConnectors[i, 0]],
+                        fullDodecVerts[dodecCubeConnectors[i, 1]],
+                        fullDodecVerts[dodecCubeConnectors[i, 2]],
+                        fullDodecVerts[dodecCubeConnectors[i, 3]], 3, 4);   // 3 Bright yellow outside, 4 dim inside.
+        }
+
+        // Now put the list of triangles in each mesh.
+        for (int i = 0; i < 14; i++)
+        {
+            ProcessMesh(i);
+        }
+    }
+
+
     //
     // Utils for vectors
     //
@@ -333,6 +372,11 @@ public class ShapeDodec : MonoBehaviour {
 
         return result;
     }
+
+
+    //
+    // Utils for meshes
+    //
 
 
     // Vertices are clockwise (from "outside").
@@ -444,5 +488,4 @@ public class ShapeDodec : MonoBehaviour {
         myNumVerts[meshOutside] += 3;
         myNumVerts[meshInside] += 3;
     }
-
 }
