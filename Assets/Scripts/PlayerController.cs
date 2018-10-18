@@ -109,8 +109,9 @@ public class PlayerController : MonoBehaviour
 
     public void ResetAnimation()
     {
-        //toggleAnimate.isOn = false;
-        //mfMain.transform.localEulerAngles = Vector3.zero;
+        panelControls.toggleAnimate.isOn = false;
+        dodec.mfMain.transform.localEulerAngles = Vector3.zero;
+        frame.transform.localEulerAngles = Vector3.zero;
     }
 
 
