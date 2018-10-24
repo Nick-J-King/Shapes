@@ -30,24 +30,15 @@ public class ShapeDodec : MonoBehaviour {
 
 
     // Mesh gameobjects.
-    public GameObject mfMain;
+    public GameObject meshMain;
 
-    private MeshFilter[] mfSub;  // Point to the 14 "sub meshes"
+    private MeshFilter[] meshes;  // Point to the 14 "sub meshes"
 
-    public MeshFilter mfMain0;
-    public MeshFilter mfMain1;
-    public MeshFilter mfMain2;
-    public MeshFilter mfMain3;
-    public MeshFilter mfMain4;
-    public MeshFilter mfMain5;
-    public MeshFilter mfMain6;
-    public MeshFilter mfMain7;
-    public MeshFilter mfMain8;
-    public MeshFilter mfMain9;
-    public MeshFilter mfMain10;
-    public MeshFilter mfMain11;
-    public MeshFilter mfMain12;
-    public MeshFilter mfMain13;
+    public MeshFilter mesh0;
+    public MeshFilter mesh1;
+    public MeshFilter mesh2;
+    public MeshFilter mesh3;
+    public MeshFilter mesh4;
 
     //private int MAXTVERTS = 65530;
 
@@ -70,22 +61,13 @@ public class ShapeDodec : MonoBehaviour {
     private void Awake()
     {
         // Create the array of meshes.
-        mfSub = new MeshFilter[14];
+        meshes = new MeshFilter[14];
 
-        mfSub[0] = mfMain0;
-        mfSub[1] = mfMain1;
-        mfSub[2] = mfMain2;
-        mfSub[3] = mfMain3;
-        mfSub[4] = mfMain4;
-        mfSub[5] = mfMain5;
-        mfSub[6] = mfMain6;
-        mfSub[7] = mfMain7;
-        mfSub[8] = mfMain8;
-        mfSub[9] = mfMain9;
-        mfSub[10] = mfMain10;
-        mfSub[11] = mfMain11;
-        mfSub[12] = mfMain12;
-        mfSub[13] = mfMain13;
+        meshes[0] = mesh0;
+        meshes[1] = mesh1;
+        meshes[2] = mesh2;
+        meshes[3] = mesh3;
+        meshes[4] = mesh4;
 
         // Create the builder info for each of the meshes.
         myNumVerts = new int[14];
@@ -304,16 +286,16 @@ public class ShapeDodec : MonoBehaviour {
         myNumTriangles[mesh] = 0;
         myVerts[mesh] = new List<Vector3>();
         myTriangles[mesh] = new List<int>();
-        mfSub[mesh].mesh.Clear();
+        meshes[mesh].mesh.Clear();
     }
 
 
     public void ProcessMesh(int mesh)
     {
-        mfSub[mesh].mesh.vertices = myVerts[mesh].ToArray();
-        mfSub[mesh].mesh.triangles = myTriangles[mesh].ToArray();
-        mfSub[mesh].mesh.RecalculateBounds();
-        mfSub[mesh].mesh.RecalculateNormals();
+        meshes[mesh].mesh.vertices = myVerts[mesh].ToArray();
+        meshes[mesh].mesh.triangles = myTriangles[mesh].ToArray();
+        meshes[mesh].mesh.RecalculateBounds();
+        meshes[mesh].mesh.RecalculateNormals();
     }
 
 
@@ -326,7 +308,7 @@ public class ShapeDodec : MonoBehaviour {
         //    Destroy(s);
         //}
 
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i <= 4; i++)
         {
             ResetMesh(i);
         }
@@ -350,7 +332,7 @@ public class ShapeDodec : MonoBehaviour {
         }
 
         // Now put the list of triangles in each mesh.
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i <= 4; i++)
         {
             ProcessMesh(i);
         }

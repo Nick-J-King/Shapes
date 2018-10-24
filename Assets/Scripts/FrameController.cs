@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class FrameController : MonoBehaviour {
 
 
-    public GameObject goFrame;
+    public GameObject frame;
+    public TextMeshPro label;
 
     private bool active; // Whether to display.
 
@@ -26,7 +28,7 @@ public class FrameController : MonoBehaviour {
     {
         active = activeIn;
 
-        goFrame.SetActive(active);
+        frame.SetActive(active);
+        label.enabled = active;
     }
-
 }

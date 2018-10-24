@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
         if (panelControls.toggleAnimate.isOn)
         {
             frame.transform.Rotate(new Vector3(0.0f, 1.0f, 0.0f), Time.deltaTime * 100.0f * panelControls.SliderAnimateSpeed.value);
-            dodec.mfMain.transform.Rotate(new Vector3(0.0f, 1.0f, 0.0f), Time.deltaTime * 100.0f * panelControls.SliderAnimateSpeed.value);
+            dodec.transform.Rotate(new Vector3(0.0f, 1.0f, 0.0f), Time.deltaTime * 100.0f * panelControls.SliderAnimateSpeed.value);
         }
     }
 
@@ -57,17 +57,6 @@ public class PlayerController : MonoBehaviour
 
         directionalLight.transform.localRotation = Quaternion.Euler(x, y, z);
         directionalLight.transform.localPosition = Vector3.zero;
-    }
-
-
-    void ComputeGeometryAndGetStats()
-    {
-        //frame.SetEdges(zeroTriangles.parameters.sliderFullInt, zeroTriangles.parameters.sliderFullInt5thEdge, zeroTriangles.parameters.nFullDivisions, zeroTriangles.parameters.dropdownEdgesInt + 3);
-        //zeroTriangles.ComputeGeometry();
-
-        //ZeroTriangleStats stats = zeroTriangles.GetStats();
-
-        //panelStatus.SetStats(stats);
     }
 
 
@@ -110,7 +99,7 @@ public class PlayerController : MonoBehaviour
     public void ResetAnimation()
     {
         panelControls.toggleAnimate.isOn = false;
-        dodec.mfMain.transform.localEulerAngles = Vector3.zero;
+        dodec.transform.localEulerAngles = Vector3.zero;
         frame.transform.localEulerAngles = Vector3.zero;
     }
 
@@ -127,5 +116,4 @@ public class PlayerController : MonoBehaviour
     {
         frame.SetActive(panelControls.toggleFrame.isOn);
     }
-
 }
