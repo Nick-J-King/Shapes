@@ -10,17 +10,9 @@ public struct ShapeDodecParameters
 }
 
 
-public class ShapeDodec : MonoBehaviour {
-
-    //public Material vertexMaterial;
-
+public class ShapeDodec : MonoBehaviour
+{
     public ShapeDodecParameters parameters;
-
-    // internal parameters.
-  
-    //bool displayVertices;
-    //float vertexSize;
-
 
     // Internal cache for building meshes.
     private int[] myNumVerts;
@@ -28,11 +20,10 @@ public class ShapeDodec : MonoBehaviour {
     private List<Vector3>[] myVerts;
     private List<int>[] myTriangles;
 
-
     // Mesh gameobjects.
     public GameObject meshMain;
 
-    private MeshFilter[] meshes;  // Point to the 14 "sub meshes"
+    private MeshFilter[] meshes;  // Point to the "sub meshes"
 
     public MeshFilter mesh0;
     public MeshFilter mesh1;
@@ -40,14 +31,8 @@ public class ShapeDodec : MonoBehaviour {
     public MeshFilter mesh3;
     public MeshFilter mesh4;
 
-    //private int MAXTVERTS = 65530;
 
-    // List of vertex spheres.
-    //private GameObject s;
-    //private ArrayList myList;
-
-
-    private Vector3[] fullDodecVerts;   // Vertices of the dodecahedra at each of the 20 vertices.
+    private Vector3[] fullDodecVerts;   // Vertices of the dodecahedra at each of the 20 vertices of the "master" dodecahedron.
 
     private int[,] fullDodecVertFaces;
     private int[,] dodecCubeConnectors;
@@ -56,12 +41,12 @@ public class ShapeDodec : MonoBehaviour {
 
 
     // Called before any Start.
-    // Inialise so this object can support ComputeGeometry in Start()
+    // Initialise so this object can support ComputeGeometry in Start()
 
     private void Awake()
     {
         // Create the array of meshes.
-        meshes = new MeshFilter[14];
+        meshes = new MeshFilter[5];
 
         meshes[0] = mesh0;
         meshes[1] = mesh1;
@@ -70,13 +55,10 @@ public class ShapeDodec : MonoBehaviour {
         meshes[4] = mesh4;
 
         // Create the builder info for each of the meshes.
-        myNumVerts = new int[14];
-        myNumTriangles = new int[14];
-        myVerts = new List<Vector3>[14];
-        myTriangles = new List<int>[14];
-
-        // Create the list of vertex spheres.
-        //myList = new ArrayList();
+        myNumVerts = new int[5];
+        myNumTriangles = new int[5];
+        myVerts = new List<Vector3>[5];
+        myTriangles = new List<int>[5];
 
         // Initialise intrinsic data.
         ComputeFaces();
@@ -84,13 +66,14 @@ public class ShapeDodec : MonoBehaviour {
 
 
     // Update is called once per frame
+
     void Update ()
     {
 		
 	}
 
 
-    // Conpute the geometry according to the parameters.
+    // Compute the geometry according to the parameters.
 
     public void ComputeGeometry()
     {
@@ -100,7 +83,7 @@ public class ShapeDodec : MonoBehaviour {
 
 
     // Compute the vertices.
-    // These are the vertices of a dodecahedon moved to each vertex of the "master dodecahedon.
+    // These are the vertices of the dodecaheda moved to each vertex of the "master" dodecahedon.
 
     private void ComputeVertices()
     {
@@ -139,7 +122,7 @@ public class ShapeDodec : MonoBehaviour {
 
 
         fullDodecVerts = new Vector3[20 * 20];
-        // The vertices of the 20 dodecahedra (one for each vertex of the "master" dodecahron.
+            // The vertices of the 20 dodecahedra (one for each vertex of the "master" dodecahron.
 
         float dodecScale = parameters.masterScale;
             // Scale of the "master" dodecahedron.
@@ -152,9 +135,9 @@ public class ShapeDodec : MonoBehaviour {
 
         for (int nDodec = 0; nDodec < 20; nDodec++)
         {
-            index = nDodec * 20;
+            index = nDodec * 20;    // Where to place the 20 vertices.
 
-            pos = dodecVerts[nDodec] * dodecScale;
+            pos = dodecVerts[nDodec] * dodecScale;  // Position of "master" dodecahedron vertices.
 
             // Place a copy of the unit dodecahedon, scaled and translated.
 
@@ -183,9 +166,10 @@ public class ShapeDodec : MonoBehaviour {
             // Faces of the square prisms connecting each dodecahedron.
 
         SetDodecCubeConnectors();
-
     }
 
+
+    // Add the pentagonal faces of a "node" dodecahedron.
 
     void AddFullDodecVertFaces(int faceIndex, int vertexOffset)
     {
@@ -203,6 +187,8 @@ public class ShapeDodec : MonoBehaviour {
         AddFullDodecVertFace(faceIndex + 11, new int[] { 10, 4, 16, 17, 7 }, vertexOffset);
     }
 
+
+    // Add all the pentagonal faces...
 
     void AddFullDodecVertFace(int faceIndex, int[] vertexIndices, int vertexOffset)
     {
@@ -260,25 +246,9 @@ public class ShapeDodec : MonoBehaviour {
     }
 
 
-    // Draw a vertex at the "zero surface", if applicable.
-
-    //public void DrawVertex(int xFull, int yFull, int zFull, float x0, float y0, float z0)
-    //{
-    //    //if (CanFormTriangleVertex(xFull, yFull, zFull) == 0)
-    //    {
-    //        s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-    //        s.transform.parent = mfMain.transform;
     //
-    //        s.transform.localPosition = new Vector3(x0, y0, z0);
-    //        s.transform.localScale = new Vector3(scale, scale, scale);
+    // Mesh utils.
     //
-    //        s.GetComponent<Renderer>().material = vertexMaterial;
-    //        s.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-    //
-    //        myList.Add(s);
-    //    }
-    //}
-
 
     public void ResetMesh(int mesh)
     {
@@ -303,11 +273,6 @@ public class ShapeDodec : MonoBehaviour {
     // Now, compute the geometry of the figure.
     private void ConstructMesh()
     {
-        //foreach (GameObject s in myList)
-        //{
-        //    Destroy(s);
-        //}
-
         for (int i = 0; i <= 4; i++)
         {
             ResetMesh(i);
@@ -336,19 +301,6 @@ public class ShapeDodec : MonoBehaviour {
         {
             ProcessMesh(i);
         }
-    }
-
-
-    //
-    // Utils for vectors
-    //
-
-
-    public Vector3Int MixVectors3Int(Vector3Int baseVector, Vector3Int dir1, int mag1, Vector3Int dir2, int mag2)
-    {
-        Vector3Int result = new Vector3Int(baseVector.x + dir1.x * mag1 + dir2.x * mag2, baseVector.y + dir1.y * mag1 + dir2.y * mag2, baseVector.z + dir1.z * mag1 + dir2.z * mag2);
-
-        return result;
     }
 
 
@@ -442,6 +394,7 @@ public class ShapeDodec : MonoBehaviour {
 
 
     // Vertices are clockwise (from "outside").
+
     public void AddTriangleBoth(Vector3 v0, Vector3 v1, Vector3 v2, int meshOutside, int meshInside)
     {
         //if (myNumVerts[meshOutside] > MAXTVERTS) return;
